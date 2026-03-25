@@ -123,38 +123,85 @@
             </div>
 
             <div class="recommendation-block">
-                <details class="recommendation-panel">
+                <details class="recommendation-panel" th:attr="data-shift-id=${shift.shiftId}">
                     <summary class="recommendation-head">
                         <h3>Top recommendations</h3>
-                        <span th:text="${shift.recommendations.size() + ' candidates'}">3 candidates</span>
+                        <span th:text="${shift.recommendationCount + ' candidates'}">3 candidates</span>
                     </summary>
 
-                    <div th:if="${#lists.isEmpty(shift.recommendations)}" class="empty-state">
-                        No eligible employees. This shift needs manual intervention.
-                    </div>
-
-                    <div class="candidate-card" th:each="candidate : ${shift.recommendations}">
-                        <div class="candidate-top">
-                            <div>
-                                <strong th:text="${candidate.employeeName}">Liam Patel</strong>
-                                <span th:text="${candidate.teamName}">Core Ops</span>
-                            </div>
-                            <div class="score-pill" th:text="${candidate.score + ' pts'}">95 pts</div>
-                        </div>
-                        <p th:text="${'Skill level ' + candidate.skillLevel + ' | projected ' + candidate.projectedWeeklyHours + 'h'}">Skill level 4 | projected 24h</p>
-                        <ul class="reason-list">
-                            <li th:each="reason : ${candidate.reasons}" th:text="${reason}">Has required skill</li>
-                        </ul>
-
-                        <form th:action="@{'/shifts/' + ${shift.shiftId} + '/assign'}" method="post">
-                            <input type="hidden" name="employeeId" th:value="${candidate.employeeId}">
-                            <button type="submit">Assign candidate</button>
-                        </form>
+                    <div class="recommendation-content">
+                        <div class="recommendation-loading">Open to load recommendations.</div>
                     </div>
                 </details>
             </div>
         </article>
     </section>
 </div>
+<script>
+    const escapeHtml = (value) => String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#39;");
+
+    const renderRecommendations = (items, shiftId) => {
+        if (!items.length) {
+            return '<div class="empty-state">No eligible employees. This shift needs manual intervention.</div>';
+        }
+
+        return items.map((candidate) => {
+            const reasons = candidate.reasons
+                .map((reason) => `<li>${escapeHtml(reason)}</li>`)
+                .join("");
+
+            return `
+                <div class="candidate-card">
+                    <div class="candidate-top">
+                        <div>
+                            <strong>${escapeHtml(candidate.employeeName)}</strong>
+                            <span>${escapeHtml(candidate.teamName)}</span>
+                        </div>
+                        <div class="score-pill">${escapeHtml(candidate.score)} pts</div>
+                    </div>
+                    <p>Skill level ${escapeHtml(candidate.skillLevel)} | projected ${escapeHtml(candidate.projectedWeeklyHours)}h</p>
+                    <ul class="reason-list">${reasons}</ul>
+                    <form action="/shifts/${encodeURIComponent(shiftId)}/assign" method="post">
+                        <input type="hidden" name="employeeId" value="${escapeHtml(candidate.employeeId)}">
+                        <button type="submit">Assign candidate</button>
+                    </form>
+                </div>
+            `;
+        }).join("");
+    };
+
+    document.querySelectorAll(".recommendation-panel").forEach((panel) => {
+        panel.addEventListener("toggle", async () => {
+            if (!panel.open || panel.dataset.loaded === "true") {
+                return;
+            }
+
+            const shiftId = panel.dataset.shiftId;
+            const container = panel.querySelector(".recommendation-content");
+            container.innerHTML = '<div class="recommendation-loading">Loading recommendations...</div>';
+
+            try {
+                const response = await fetch(`/api/shifts/${shiftId}/recommendations`, {
+                    headers: { "Accept": "application/json" }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Unable to load recommendations.");
+                }
+
+                const items = await response.json();
+                container.innerHTML = renderRecommendations(items.slice(0, 3), shiftId);
+                panel.dataset.loaded = "true";
+            } catch (error) {
+                container.innerHTML = '<div class="empty-state">Could not load recommendations right now.</div>';
+            }
+        });
+    });
+</script>
 </body>
 </html>

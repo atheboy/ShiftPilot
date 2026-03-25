@@ -99,10 +99,7 @@ public class SchedulingService {
                 .map(assignment -> assignment.getEmployee().getFullName())
                 .sorted()
                 .toList();
-        List<CandidateRecommendation> recommendations = recommendationEngine.recommend(shift, employees, assignmentsByEmployee)
-                .stream()
-                .limit(3)
-                .toList();
+        int recommendationCount = recommendationEngine.recommend(shift, employees, assignmentsByEmployee).size();
 
         return new ShiftCardView(
                 shift.getId(),
@@ -116,7 +113,7 @@ public class SchedulingService {
                 shift.getRequiredHeadcount(),
                 shift.getAssignments().size(),
                 assignedEmployees,
-                recommendations
+                recommendationCount
         );
     }
 

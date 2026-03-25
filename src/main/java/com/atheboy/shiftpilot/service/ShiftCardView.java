@@ -18,7 +18,7 @@ public record ShiftCardView(
         int requiredHeadcount,
         int assignedHeadcount,
         List<String> assignedEmployees,
-        List<CandidateRecommendation> recommendations
+        int recommendationCount
 ) {
 
     public int openSlots() {
