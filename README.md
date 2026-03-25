@@ -58,29 +58,47 @@ If they pass those checks, the app scores them and ranks the strongest choices f
 - It is built around a recommendation engine, not just forms
 - It includes tests for the core logic
 
-## Running the app
+## How to run the app
 
-### What you need
+You only need one thing before starting:
 
-- Java 21 installed
+- Java 21 installed on your computer
 
-### Start it
+### Step 1: Open the project folder
 
-On Windows PowerShell:
+Open a terminal inside the `ShiftPilot` folder.
+
+### Step 2: Start the app
+
+If you are using Windows PowerShell, run:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-On macOS or Linux:
+If you are using macOS or Linux, run:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Then open:
+### Step 3: Open it in your browser
+
+Once the app finishes starting, open:
 
 - [http://localhost:8080](http://localhost:8080)
+
+You should see the ShiftPilot dashboard with sample shift data already loaded.
+
+### Step 4: Stop the app
+
+When you are done, go back to the terminal and press `Ctrl + C`.
+
+### If it does not start
+
+- Check that Java 21 is installed
+- Make sure port `8080` is not already being used by another app
+- Try running the test command below to confirm the project builds correctly
 
 ## Extra links
 
@@ -94,7 +112,9 @@ If you open the H2 console, use:
 - Username: `sa`
 - Password: leave blank
 
-## Running the tests
+## How to run the tests
+
+If you want to check that everything is working, run the tests.
 
 On Windows PowerShell:
 
