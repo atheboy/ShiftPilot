@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShiftPilot</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<div class="page-shell">
+    <header class="hero">
+        <div>
+            <p class="eyebrow">Operations Staffing Engine</p>
+            <h1>ShiftPilot</h1>
+            <p class="hero-copy">A Java + SQL scheduling engine for fair staffing, conflict detection, rest-window enforcement, and skill-based recommendations.</p>
+        </div>
+        <div class="hero-actions">
+            <a href="/h2-console" target="_blank" rel="noreferrer">H2 Console</a>
+            <a href="/api/dashboard" target="_blank" rel="noreferrer">Dashboard API</a>
+            <a href="/api/shifts/1/recommendations" target="_blank" rel="noreferrer">Sample API</a>
+        </div>
+    </header>
+
+    <div class="flash flash-success" th:if="${message}" th:text="${message}"></div>
+    <div class="flash flash-error" th:if="${error}" th:text="${error}"></div>
+
+    <section class="summary-grid">
+        <article class="summary-card">
+            <span>Total shifts</span>
+            <strong th:text="${dashboard.summary.totalShifts}">0</strong>
+        </article>
+        <article class="summary-card">
+            <span>Fully staffed</span>
+            <strong th:text="${dashboard.summary.fullyStaffedShifts}">0</strong>
+        </article>
+        <article class="summary-card">
+            <span>Open slots</span>
+            <strong th:text="${dashboard.summary.openSlots}">0</strong>
+        </article>
+        <article class="summary-card alert">
+            <span>Critical gaps</span>
+            <strong th:text="${dashboard.summary.criticalOpenShifts}">0</strong>
+        </article>
+        <article class="summary-card">
+            <span>Employees</span>
+            <strong th:text="${dashboard.summary.employeeCount}">0</strong>
+        </article>
+    </section>
+
+    <section class="insight-grid">
+        <article class="insight-card">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Team Utilization</p>
+                    <h2>Capacity pressure</h2>
+                </div>
+            </div>
+            <div class="team-load-list">
+                <div class="team-load-card" th:each="team : ${dashboard.teamLoads}">
+                    <div class="team-load-top">
+                        <strong th:text="${team.teamName}">Core Ops</strong>
+                        <span th:text="${team.utilizationPercent + '% utilized'}">64% utilized</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-bar" th:style="'width:' + ${team.utilizationPercent} + '%'"></div>
+                    </div>
+                    <p th:text="${team.assignedHours + ' assigned hours across ' + team.assignedShifts + ' shift(s) | capacity ' + team.capacityHours + 'h'}">
+                        24 assigned hours across 3 shift(s) | capacity 40h
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <article class="insight-card">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Coverage Watchlist</p>
+                    <h2>Operational risks</h2>
+                </div>
+            </div>
+            <div class="risk-list">
+                <div class="risk-card" th:if="${#lists.isEmpty(dashboard.coverageRisks)}">
+                    All current shifts have healthy candidate coverage.
+                </div>
+                <div class="risk-card" th:each="risk : ${dashboard.coverageRisks}" th:classappend="${' risk-' + risk.severity}">
+                    <div class="risk-title-row">
+                        <strong th:text="${risk.title}">No eligible backup for Security Triage</strong>
+                        <span th:text="${risk.severity}">critical</span>
+                    </div>
+                    <p th:text="${risk.detail}">No employee currently passes the rules for this shift.</p>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="shift-grid">
+        <article class="shift-card" th:each="shift : ${dashboard.shifts}">
+            <div class="shift-head">
+                <div>
+                    <p class="shift-date" th:text="${#temporals.format(shift.shiftDate, 'EEE, dd MMM yyyy')}">Mon, 30 Mar 2026</p>
+                    <h2 th:text="${shift.requiredSkill}">Incident Response</h2>
+                </div>
+                <span class="priority" th:text="${shift.priority}" th:classappend="${' priority-' + #strings.toLowerCase(shift.priority.name())}">HIGH</span>
+            </div>
+
+            <div class="shift-meta">
+                <span th:text="${shift.location}">Remote</span>
+                <span th:text="${shift.shiftType}">DAY</span>
+                <span th:text="${#temporals.format(shift.startTime, 'HH:mm') + ' - ' + #temporals.format(shift.endTime, 'HH:mm')}">09:00 - 17:00</span>
+            </div>
+
+            <div class="coverage" th:classappend="${shift.fullyStaffed()} ? ' coverage-good' : ' coverage-open'">
+                <strong th:text="${shift.assignedHeadcount + '/' + shift.requiredHeadcount + ' assigned'}">1/2 assigned</strong>
+                <span th:text="${shift.openSlots() == 0 ? 'Coverage healthy' : shift.openSlots() + ' open slot(s) remaining'}">1 open slot</span>
+            </div>
+
+            <div class="assigned-block">
+                <h3>Assigned</h3>
+                <ul>
+                    <li th:if="${#lists.isEmpty(shift.assignedEmployees)}">No one assigned yet</li>
+                    <li th:each="assigned : ${shift.assignedEmployees}" th:text="${assigned}">Ava Collins</li>
+                </ul>
+            </div>
+
+            <div class="recommendation-block">
+                <div class="recommendation-head">
+                    <h3>Top recommendations</h3>
+                    <span th:text="${shift.recommendations.size() + ' candidates'}">3 candidates</span>
+                </div>
+
+                <div th:if="${#lists.isEmpty(shift.recommendations)}" class="empty-state">
+                    No eligible employees. This shift needs manual intervention.
+                </div>
+
+                <div class="candidate-card" th:each="candidate : ${shift.recommendations}">
+                    <div class="candidate-top">
+                        <div>
+                            <strong th:text="${candidate.employeeName}">Liam Patel</strong>
+                            <span th:text="${candidate.teamName}">Core Ops</span>
+                        </div>
+                        <div class="score-pill" th:text="${candidate.score + ' pts'}">95 pts</div>
+                    </div>
+                    <p th:text="${'Skill level ' + candidate.skillLevel + ' | projected ' + candidate.projectedWeeklyHours + 'h'}">Skill level 4 | projected 24h</p>
+                    <ul class="reason-list">
+                        <li th:each="reason : ${candidate.reasons}" th:text="${reason}">Has required skill</li>
+                    </ul>
+
+                    <form th:action="@{'/shifts/' + ${shift.shiftId} + '/assign'}" method="post">
+                        <input type="hidden" name="employeeId" th:value="${candidate.employeeId}">
+                        <button type="submit">Assign candidate</button>
+                    </form>
+                </div>
+            </div>
+        </article>
+    </section>
+</div>
+</body>
+</html>
