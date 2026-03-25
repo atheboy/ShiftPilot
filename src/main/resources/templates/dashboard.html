@@ -123,33 +123,35 @@
             </div>
 
             <div class="recommendation-block">
-                <div class="recommendation-head">
-                    <h3>Top recommendations</h3>
-                    <span th:text="${shift.recommendations.size() + ' candidates'}">3 candidates</span>
-                </div>
+                <details class="recommendation-panel">
+                    <summary class="recommendation-head">
+                        <h3>Top recommendations</h3>
+                        <span th:text="${shift.recommendations.size() + ' candidates'}">3 candidates</span>
+                    </summary>
 
-                <div th:if="${#lists.isEmpty(shift.recommendations)}" class="empty-state">
-                    No eligible employees. This shift needs manual intervention.
-                </div>
-
-                <div class="candidate-card" th:each="candidate : ${shift.recommendations}">
-                    <div class="candidate-top">
-                        <div>
-                            <strong th:text="${candidate.employeeName}">Liam Patel</strong>
-                            <span th:text="${candidate.teamName}">Core Ops</span>
-                        </div>
-                        <div class="score-pill" th:text="${candidate.score + ' pts'}">95 pts</div>
+                    <div th:if="${#lists.isEmpty(shift.recommendations)}" class="empty-state">
+                        No eligible employees. This shift needs manual intervention.
                     </div>
-                    <p th:text="${'Skill level ' + candidate.skillLevel + ' | projected ' + candidate.projectedWeeklyHours + 'h'}">Skill level 4 | projected 24h</p>
-                    <ul class="reason-list">
-                        <li th:each="reason : ${candidate.reasons}" th:text="${reason}">Has required skill</li>
-                    </ul>
 
-                    <form th:action="@{'/shifts/' + ${shift.shiftId} + '/assign'}" method="post">
-                        <input type="hidden" name="employeeId" th:value="${candidate.employeeId}">
-                        <button type="submit">Assign candidate</button>
-                    </form>
-                </div>
+                    <div class="candidate-card" th:each="candidate : ${shift.recommendations}">
+                        <div class="candidate-top">
+                            <div>
+                                <strong th:text="${candidate.employeeName}">Liam Patel</strong>
+                                <span th:text="${candidate.teamName}">Core Ops</span>
+                            </div>
+                            <div class="score-pill" th:text="${candidate.score + ' pts'}">95 pts</div>
+                        </div>
+                        <p th:text="${'Skill level ' + candidate.skillLevel + ' | projected ' + candidate.projectedWeeklyHours + 'h'}">Skill level 4 | projected 24h</p>
+                        <ul class="reason-list">
+                            <li th:each="reason : ${candidate.reasons}" th:text="${reason}">Has required skill</li>
+                        </ul>
+
+                        <form th:action="@{'/shifts/' + ${shift.shiftId} + '/assign'}" method="post">
+                            <input type="hidden" name="employeeId" th:value="${candidate.employeeId}">
+                            <button type="submit">Assign candidate</button>
+                        </form>
+                    </div>
+                </details>
             </div>
         </article>
     </section>
