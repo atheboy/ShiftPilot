@@ -10,7 +10,7 @@
     --accent-2: #22c55e;
     --accent-3: #f97316;
     --danger: #fb7185;
-    --shadow: none;
+    --shadow: 0 12px 28px rgba(2, 8, 23, 0.18);
     --shell-width: 1560px;
     --shell-gutter: clamp(18px, 3vw, 42px);
     --section-gap: clamp(20px, 2.8vw, 34px);
@@ -26,7 +26,10 @@ body {
     min-height: 100vh;
     font-family: "Segoe UI", system-ui, sans-serif;
     color: var(--text);
-    background: linear-gradient(180deg, var(--bg), var(--bg-2));
+    background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.12), transparent 26%),
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.08), transparent 18%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
     line-height: 1.55;
 }
 
@@ -66,6 +69,9 @@ a {
     align-items: flex-start;
     gap: clamp(18px, 3vw, 40px);
     padding: clamp(28px, 4vw, 42px);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+        var(--card);
 }
 
 .eyebrow {
@@ -114,13 +120,13 @@ button {
 }
 
 button {
-    background: #235ea8;
+    background: linear-gradient(135deg, #2563eb, #0f7adf);
     border-color: transparent;
 }
 
 .hero-actions a:hover,
 button:hover {
-    background: #2d6fbe;
+    background: linear-gradient(135deg, #3171f0, #2289eb);
 }
 
 .flash {
@@ -146,6 +152,17 @@ button:hover {
 .summary-card {
     padding: 22px 24px;
     min-height: 138px;
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-3));
+    opacity: 0.75;
 }
 
 .summary-card span {
@@ -257,6 +274,9 @@ button:hover {
 
 .shift-card {
     padding: 28px 30px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
+        var(--card);
 }
 
 .shift-head {
@@ -285,7 +305,7 @@ button:hover {
     border-radius: 999px;
     font-size: 0.85rem;
     font-weight: 700;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .priority-critical {
@@ -400,6 +420,7 @@ button:hover {
     border: 1px solid var(--border);
     background: var(--card);
     padding: 10px 16px;
+    box-shadow: var(--shadow);
 }
 
 .page-link:hover {
