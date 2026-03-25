@@ -1,114 +1,70 @@
 # ShiftPilot
 
-ShiftPilot is a Java + SQL workforce scheduling application built to look more like an operations tool than a class demo. It combines a Spring Boot backend, Flyway-managed SQL schema, and a rule-based staffing engine that recommends the best candidate for a shift while enforcing availability, overlap, rest-window, and weekly-capacity constraints.
+ShiftPilot is a shift planning app I built in Java and SQL to show more than just basic forms and database tables.
 
-## Why this project stands out
+The idea is simple: if a team needs people assigned to important shifts, the app should help choose the right person instead of making a manager do all the thinking manually.
 
-- It solves a real scheduling problem instead of just doing CRUD.
-- It exposes both a server-rendered dashboard and JSON APIs.
-- It uses SQL migrations, seeded demo data, and a domain model with business rules.
-- It includes unit and integration tests for the recommendation engine and service layer.
-- It surfaces staffing risk and team utilization analytics on the dashboard.
+It looks at things like:
 
-## Core features
+- what skills a person has
+- when they are available
+- whether they are already booked somewhere else
+- whether they have had enough rest between shifts
+- whether they are already close to their weekly hour limit
 
-- Skill-based shift matching
-- 12-hour minimum rest policy enforcement
-- Overlap detection between assignments
-- Weekly capacity limits per employee
-- Ranked candidate recommendations with transparent rule explanations
-- Coverage watchlist for understaffed or risky shifts
-- Team utilization analytics
-- Flyway database migrations with seeded sample data
-- H2 console for inspecting the SQL data model
+Then it suggests the best people for the job and shows where the schedule still has risk.
 
-## Tech stack
+## What the app does
+
+- Shows open and filled shifts on a dashboard
+- Suggests the best employees for each shift
+- Prevents bad assignments like overlaps or not enough rest
+- Tracks team workload so you can see who is carrying the most hours
+- Highlights risky gaps where coverage is still weak
+- Stores the data in SQL with a proper database structure
+
+## Why I made it
+
+I wanted a project that felt closer to a real business tool than a simple school project.
+
+A lot of portfolio apps stop at “add, edit, delete.” This one tries to show decision-making, rules, tradeoffs, and data working together in a practical way.
+
+## Built with
 
 - Java 21
-- Spring Boot 3
-- Spring MVC + Thymeleaf
-- Spring Data JPA
-- H2 SQL database
-- Flyway
-- JUnit 5 + Spring Boot Test
+- Spring Boot
+- SQL with H2
+- Flyway for database setup
+- Thymeleaf for the dashboard
+- JUnit for testing
 
-## Architecture
+## How it works in plain English
 
-```mermaid
-flowchart LR
-    UI["Thymeleaf Dashboard"] --> Controller["DashboardController"]
-    API["REST APIs"] --> Controller
-    Controller --> Service["SchedulingService"]
-    Service --> Engine["ShiftRecommendationEngine"]
-    Service --> Repo["JPA Repositories"]
-    Repo --> DB["H2 + Flyway SQL Schema"]
-```
+When the app checks who should be assigned to a shift, it asks:
 
-### Main backend responsibilities
+1. Does this person have the required skill?
+2. Are they actually available at that time?
+3. Are they already assigned to another shift that overlaps?
+4. Have they had enough rest since their last shift?
+5. Would this assignment push them over their weekly hours?
 
-- `SchedulingService`
-  Handles dashboard composition, assignments, analytics, and API-facing data assembly.
-- `ShiftRecommendationEngine`
-  Applies the business rules and computes ranked candidates.
-- `db/migration`
-  Defines the SQL schema and demo dataset in versioned Flyway migrations.
+If they pass those checks, the app scores them and ranks the strongest choices first.
 
-## Rule engine logic
+## What makes it stronger than a basic CRUD app
 
-Each recommendation is scored only after the employee passes all gate checks:
+- It has real scheduling rules
+- It uses SQL migrations and sample data
+- It includes both a dashboard and API endpoints
+- It is built around a recommendation engine, not just forms
+- It includes tests for the core logic
 
-1. Required skill must exist.
-2. Employee must be available for the full shift window.
-3. Employee must not already have an overlapping assignment.
-4. Employee must respect the 12-hour rest window.
-5. Employee must stay within max weekly hours.
+## Running the app
 
-Eligible candidates are then ranked using:
-
-- skill level
-- preferred shift-type match
-- remaining weekly capacity
-
-## Data model
-
-Main entities:
-
-- `employees`
-- `skills`
-- `employee_skills`
-- `availability_windows`
-- `shifts`
-- `shift_assignments`
-
-This structure allows the app to model:
-
-- many-to-many employee skill mapping
-- daily availability windows
-- per-shift headcount requirements
-- assignment history for rest and overlap checks
-
-## Project structure
-
-```text
-src/main/java/com/atheboy/shiftpilot
-  domain/        JPA entities and enums
-  repository/    Spring Data repositories
-  service/       recommendation engine and dashboard orchestration
-  web/           MVC controllers and REST API controllers
-
-src/main/resources
-  db/migration/  Flyway SQL schema + seed data
-  templates/     Thymeleaf dashboard
-  static/        CSS
-```
-
-## How to run
-
-### Requirements
+### What you need
 
 - Java 21 installed
 
-### Start the app
+### Start it
 
 On Windows PowerShell:
 
@@ -126,19 +82,19 @@ Then open:
 
 - [http://localhost:8080](http://localhost:8080)
 
-Optional tools:
+## Extra links
 
-- H2 console: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+- H2 database console: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 - Dashboard API: [http://localhost:8080/api/dashboard](http://localhost:8080/api/dashboard)
-- Recommendation API example: [http://localhost:8080/api/shifts/1/recommendations](http://localhost:8080/api/shifts/1/recommendations)
+- Sample recommendation API: [http://localhost:8080/api/shifts/1/recommendations](http://localhost:8080/api/shifts/1/recommendations)
 
-H2 console connection values:
+If you open the H2 console, use:
 
 - JDBC URL: `jdbc:h2:mem:shiftpilot`
 - Username: `sa`
 - Password: leave blank
 
-## Run tests
+## Running the tests
 
 On Windows PowerShell:
 
@@ -152,34 +108,35 @@ On macOS or Linux:
 ./mvnw test
 ```
 
-## Demo scenario
+## Sample data
 
-The seeded dataset includes:
+The app comes with demo data already included, so when it starts you can immediately see:
 
-- six employees across multiple teams
-- three skill domains
+- employees
+- skills
 - availability windows
-- six operational shifts with mixed priority
-- existing assignments that create realistic staffing gaps
+- scheduled shifts
+- existing assignments
+- open staffing gaps
 
-That gives you a working dashboard immediately after startup with:
+## Short portfolio note
 
-- open shifts
-- top candidate suggestions
-- staffing risk cards
-- utilization by team
+This project was made to show that I can build something with:
 
-## Portfolio framing
+- backend logic
+- SQL data design
+- business rules
+- testing
+- a usable interface
 
-ShiftPilot is intentionally designed to show more than UI polish. It demonstrates:
+Not just something that looks nice, but something that has to think before it acts.
 
-- domain modeling
-- SQL schema design
-- backend business-rule implementation
-- testable service boundaries
-- API + server-rendered delivery
-- operational tradeoff thinking
+## Verification
 
-## Verification note
+The app has now been tested locally in this workspace:
 
-The codebase includes tests and Maven wrapper commands, but during development in this workspace the Maven dependency download hit a machine-level disk-space problem before the full test run could complete. The app and repo are set up correctly for standard Maven execution once local disk space is available.
+- the Maven test suite passes
+- the Spring Boot app starts successfully
+- the dashboard responds at `http://localhost:8080`
+
+I have only verified it directly on this Windows machine here. The project uses standard Java, Spring Boot, and Maven wrapper scripts for Windows, macOS, and Linux, so it should be portable, but cross-platform proof would still come from running it on those systems or adding CI for them.

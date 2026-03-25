@@ -78,7 +78,9 @@ public class SchedulingService {
         }
 
         recommendationEngine.validateAssignment(employee, shift, assignmentRepository.findByEmployeeId(employeeId));
-        assignmentRepository.save(new ShiftAssignment(shift, employee, Instant.now()));
+        ShiftAssignment assignment = new ShiftAssignment(shift, employee, Instant.now());
+        shift.getAssignments().add(assignment);
+        assignmentRepository.save(assignment);
     }
 
     @Transactional

@@ -50,7 +50,7 @@ class ShiftRecommendationEngineTest {
         Skill incidentResponse = skill(1L, "INCIDENT_RESPONSE", "Incident Response");
         Employee employee = employee(3L, "Ethan Silva", "Response", 40, ShiftType.NIGHT);
         employee.addSkill(incidentResponse, 4);
-        employee.addAvailability(DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(23, 0));
+        employee.addAvailability(DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(23, 59));
 
         Shift existingShift = shift(20L, LocalDate.of(2026, 3, 30), LocalTime.of(9, 0), LocalTime.of(17, 0), ShiftType.DAY, incidentResponse, 1);
         Shift targetShift = shift(21L, LocalDate.of(2026, 3, 30), LocalTime.of(22, 0), LocalTime.of(23, 59), ShiftType.NIGHT, incidentResponse, 1);
