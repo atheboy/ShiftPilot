@@ -60,45 +60,67 @@ If they pass those checks, the app scores them and ranks the strongest choices f
 
 ## How to run the app
 
-You only need one thing before starting:
+This project is easier to run than it looks. You only need Java 21 first.
 
-- Java 21 installed on your computer
+### Before you start: install Java 21
 
-### Step 1: Open the project folder
+If Java 21 is not already on your computer:
 
-Open a terminal inside the `ShiftPilot` folder.
+1. Go to a Java 21 download page, such as Eclipse Temurin or Oracle JDK.
+2. Download Java 21 for your computer type.
+3. Run the installer and follow the normal setup steps.
+4. When the install finishes, restart your terminal.
 
-### Step 2: Start the app
+If you are not sure whether Java is installed, open a terminal and type:
 
-If you are using Windows PowerShell, run:
+```powershell
+java -version
+```
+
+If you see version `21`, you are ready.
+
+### Step 1: download or open the project
+
+Make sure you have the `ShiftPilot` project folder on your computer.
+
+### Step 2: open the project folder in a terminal
+
+Open PowerShell, Command Prompt, or Terminal inside the `ShiftPilot` folder.
+
+### Step 3: start the app
+
+If you are on Windows, run:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-If you are using macOS or Linux, run:
+If you are on macOS or Linux, run:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-### Step 3: Open it in your browser
+The first start can take a minute because the app may download what it needs.
 
-Once the app finishes starting, open:
+### Step 4: open the app in your browser
+
+When the app has finished starting, open this address in your browser:
 
 - [http://localhost:8080](http://localhost:8080)
 
-You should see the ShiftPilot dashboard with sample shift data already loaded.
+You should see the ShiftPilot dashboard with sample data already loaded.
 
-### Step 4: Stop the app
+### Step 5: stop the app
 
-When you are done, go back to the terminal and press `Ctrl + C`.
+When you are finished, go back to the terminal window and press `Ctrl + C`.
 
-### If it does not start
+### If it does not work
 
-- Check that Java 21 is installed
-- Make sure port `8080` is not already being used by another app
-- Try running the test command below to confirm the project builds correctly
+- Make sure Java 21 is installed
+- Make sure you are running the command inside the `ShiftPilot` folder
+- Make sure another app is not already using port `8080`
+- Try the test command below to check that the project builds correctly
 
 ## Extra links
 
