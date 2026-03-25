@@ -136,8 +136,15 @@
             </div>
         </article>
     </section>
+
+    <nav class="pagination" th:if="${totalPages > 1}">
+        <a class="page-link" th:if="${hasPreviousPage}" th:href="@{/(page=${currentPage - 1})}">Previous</a>
+        <span class="page-status" th:text="${'Page ' + currentPage + ' of ' + totalPages}">Page 1 of 2</span>
+        <a class="page-link" th:if="${hasNextPage}" th:href="@{/(page=${currentPage + 1})}">Next</a>
+    </nav>
 </div>
-<script>
+<script th:inline="javascript">
+    const currentPage = /*[[${currentPage}]]*/ 1;
     const escapeHtml = (value) => String(value)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -168,6 +175,7 @@
                     <ul class="reason-list">${reasons}</ul>
                     <form action="/shifts/${encodeURIComponent(shiftId)}/assign" method="post">
                         <input type="hidden" name="employeeId" value="${escapeHtml(candidate.employeeId)}">
+                        <input type="hidden" name="page" value="${escapeHtml(currentPage)}">
                         <button type="submit">Assign candidate</button>
                     </form>
                 </div>

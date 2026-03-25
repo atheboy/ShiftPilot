@@ -385,6 +385,31 @@ button:hover {
     padding: 6px 0 2px;
 }
 
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 28px;
+    padding: 10px 0 6px;
+}
+
+.page-link,
+.page-status {
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 10px 16px;
+}
+
+.page-link:hover {
+    background: var(--card-soft);
+}
+
+.page-status {
+    color: var(--muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
